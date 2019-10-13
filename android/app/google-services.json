@@ -1,0 +1,41 @@
+{
+    "project_info": {
+        "project_number": "641037724417",
+        "firebase_url": "https://ticknote-79996.firebaseio.com",
+        "project_id": "ticknote-79996",
+        "storage_bucket": "ticknote-79996.appspot.com"
+    },
+    "client": [{
+        "client_info": {
+            "mobilesdk_app_id": "1:641037724417:android:a64b223c9c9b6081994900",
+            "android_client_info": {
+                "package_name": "com.example.ticknote"
+            }
+        },
+        "oauth_client": [{
+                "client_id": "641037724417-cojq66jjvko81cflvs0p2djjp5bggvi9.apps.googleusercontent.com",
+                "client_type": 1,
+                "android_info": {
+                    "package_name": "com.example.ticknote",
+                    "certificate_hash": "531e61f3685289bb5f550c3d179a6956b8d7e872"
+                }
+            },
+            {
+                "client_id": "641037724417-9eupigugoo1qtkuon70p3q6nlrie648b.apps.googleusercontent.com",
+                "client_type": 3
+            }
+        ],
+        "api_key": [{
+            "current_key": "AIzaSyCHI2bVTIiAHB0Nncu21rV_1mSZb0AkxaU"
+        }],
+        "services": {
+            "appinvite_service": {
+                "other_platform_oauth_client": [{
+                    "client_id": "641037724417-9eupigugoo1qtkuon70p3q6nlrie648b.apps.googleusercontent.com",
+                    "client_type": 3
+                }]
+            }
+        }
+    }],
+    "configuration_version": "1"
+}
