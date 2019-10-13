@@ -21,14 +21,14 @@ class Validators{
 
     handleData: (password, sink){
 
-      if( password.length >= 6 ) {
+      if( password.length != 0 ) {
         sink.add(password);
       } else {
-        sink.addError('Contraseña inválida');
+        sink.addError('Ingresa tu contrasenia');
       }
 
     }
-
+  
   );
 
 }
