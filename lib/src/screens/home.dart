@@ -15,13 +15,13 @@ class Home extends StatelessWidget with RectangleOrange {
       child: AppBar(
         elevation: 0.0,
         backgroundColor: Colors.transparent,
-        title: Text('TickNote'),
+        title: Text('TickNote', style: TextStyle(color: Colors.white),),
       ),
     );
 
     final _photoProfile = Positioned(
       right: size.width * 0.03,
-      top:  size.height * 0.04,
+      top:  size.height * 0.05,
       child: Container(
         height: size.height * 0.075,
         width: size.width * 0.2,
