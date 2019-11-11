@@ -10,9 +10,10 @@ class LoginBloc with Validators{
 
   Stream<String> get userStream     => _userController.stream.transform(validarEmail);
   Stream<String> get passwordStream => _passwordController.stream.transform(validaPassword);
-  Stream<String> get repeatPStream  => _repeatPController.stream;
+  Stream<String> get repeatPStream  => _repeatPController.stream.transform(repeatPassword);
 
   Stream<bool> get buttonLoginStream => Observable.combineLatest2(userStream, passwordStream, (e,p) => true);
+  Stream<bool> get buttonRegisterStream => Observable.combineLatest3(userStream, passwordStream, repeatPStream, (e,p,t) => true);
   //Stream<String> get repeatPassStream => Observable.combineLatest2(streamA, streamB, combiner)
  
   Function(String) get changeUser     => _userController.sink.add;
