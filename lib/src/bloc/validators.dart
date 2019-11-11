@@ -28,7 +28,19 @@ class Validators{
       }
 
     }
-  
+
   );
+
+  final repeatPassword = StreamTransformer<String, String>.fromHandlers(
+    handleData: (repeatPassword, sink){
+      if( repeatPassword.length != 0 ) {
+        sink.add(repeatPassword);
+      } else {
+        sink.addError('La contrasenia no coincide');
+      }
+    }
+  );
+
+  
 
 }
