@@ -15,7 +15,10 @@ class MyApp extends StatelessWidget {
         debugShowCheckedModeBanner: false,
         title: 'TickNote',
         theme: ThemeData(
-          primarySwatch: Colors.blue,
+          primarySwatch: Colors.orange,
+          appBarTheme: AppBarTheme(
+            iconTheme: IconThemeData(color: Colors.white)
+          )
         ),
         initialRoute: 'splash',
         routes: {
