@@ -22,7 +22,7 @@ class UserPreferences{
   }
 
   get session{
-    return _preferences.getBool('session');
+    return _preferences.getBool('session') ?? 'login';
   }
 
   set session(bool session){
