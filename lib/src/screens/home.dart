@@ -1,8 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:ticknote/src/screens/rectangleOrange.dart';
 
-class Home extends StatelessWidget with RectangleOrange {
+class Home extends StatefulWidget {
   const Home({Key key}) : super(key: key);
+
+  @override
+  _HomeState createState() => _HomeState();
+}
+
+class _HomeState extends State<Home> with RectangleOrange, SingleTickerProviderStateMixin{
+
+  TabController _tabController;
+
+  @override
+  void initState() {
+    super.initState();
+    _tabController = TabController(length: 3, vsync: this);
+
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -31,11 +46,26 @@ class Home extends StatelessWidget with RectangleOrange {
         ),
       ),
     );
+    
+    final _contentPages = Container(
+      height: size.height,
+      width: size.width,
+      margin: EdgeInsets.only(top: size.height * 0.14, bottom: size.height * 0.1),
+      child: TabBarView(
+        controller: _tabController,
+        children: <Widget>[
+          Container(color: Colors.red,),
+          Container(color: Colors.purple),
+          _profile(context, size)
+        ],
+      ),
+    );
 
     final _bottomNavBar = Align(
       alignment: Alignment.bottomCenter,
       child: Container(
-        padding: EdgeInsets.symmetric(horizontal: size.width * 0.1),
+        padding: EdgeInsets.symmetric(horizontal: size.width * 0.05),
+        margin: EdgeInsets.only(right: size.width * 0.2),
         height: size.height * 0.09,
         width: size.width,
         decoration: BoxDecoration(
@@ -45,33 +75,13 @@ class Home extends StatelessWidget with RectangleOrange {
             topRight: Radius.circular(30)
           )
         ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: <Widget>[
-            Column(
-              children: <Widget>[
-                SizedBox(height: size.height*0.01),
-                Icon(Icons.home, color: Colors.black54,),
-                Text('Inicio', style: TextStyle(color: Colors.black54))
-              ],
-            ),
-            Column(
-              children: <Widget>[
-                SizedBox(height: size.height*0.01),
-                Icon(Icons.format_list_bulleted, color: Colors.black54,),
-                Text('Categorias', style: TextStyle(color: Colors.black54))
-              ],
-            ),
-            Column(
-              children: <Widget>[
-                SizedBox(height: size.height*0.01),
-                Icon(Icons.person_outline, color: Colors.black54, size: size.height * 0.03,),
-                Text('Perfil', style: TextStyle(color: Colors.black54),)
-              ],
-            ),
-            Container(),
-            Container()
-          ]
+        child: TabBar(
+          controller: _tabController,
+          tabs: <Widget>[
+            Tab(icon: Icon(Icons.home, color: Colors.black54,), text: 'Inicio',),
+            Tab(icon: Icon(Icons.format_list_bulleted, color: Colors.black54,), text: 'Categorias',),
+            Tab(icon: Icon(Icons.person_outline, color: Colors.black54), text: 'Perfil',),
+          ],
         )
       ),
     );
@@ -111,6 +121,7 @@ class Home extends StatelessWidget with RectangleOrange {
 
             _appBar,
             _photoProfile,
+            _contentPages,
             _bottomNavBar
 
           ],
@@ -122,4 +133,36 @@ class Home extends StatelessWidget with RectangleOrange {
 
     );
   }
+
+  Widget _profile(BuildContext context, Size size){
+
+    return Container(
+      child: Column(
+        children: <Widget>[
+          CircleAvatar(
+            backgroundColor: Colors.red,
+            radius: size.height * 0.1,
+          ),
+          Divider(height: 100, color: Colors.orange),
+          Text('Nombre', style: TextStyle(color: Theme.of(context).primaryColor, fontSize: 18, fontWeight: FontWeight.bold)),
+          SizedBox(height: 13,),
+          Text('Israel', style: TextStyle(color: Colors.blueGrey, fontSize: 20)),
+          SizedBox(height: 25,),
+          Text('email', style: TextStyle(color: Theme.of(context).primaryColor, fontSize: 18, fontWeight: FontWeight.bold)),
+          Text('Israel', style: TextStyle(color: Colors.blueGrey, fontSize: 20)),
+          MaterialButton(
+            child: Row(
+              children: <Widget>[
+                Icon(Icons.exit_to_app),
+                Text('Cerrar sesion')
+              ],
+            ),
+            onPressed: ()=> print('Cerrar sesion'),
+          )
+        ],
+      ),
+    );
+
+  }
+
 }

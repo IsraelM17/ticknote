@@ -4,6 +4,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:ticknote/src/bloc/loginBloc.dart';
 import 'package:ticknote/src/bloc/provider.dart';
 import 'package:ticknote/src/firebase/auth.dart';
+import 'package:ticknote/src/preferences/userPreferences.dart';
 import 'package:ticknote/src/screens/rectangleOrange.dart';
 
 class Login extends StatefulWidget with RectangleOrange{
@@ -16,13 +17,14 @@ class Login extends StatefulWidget with RectangleOrange{
 class _LoginState extends State<Login> with RectangleOrange{
 
   bool _register  = false;
-  bool _remember = false;
   bool _loading = false;
 
   TextEditingController _emailController  = TextEditingController();
   TextEditingController _passController   = TextEditingController(); 
 
   GlobalKey<ScaffoldState> _globalKey = GlobalKey<ScaffoldState>();
+
+  final _userPreferences = UserPreferences();
 
   @override
   Widget build(BuildContext context) {
@@ -335,20 +337,17 @@ class _LoginState extends State<Login> with RectangleOrange{
 
     bool isLogged = await Auth().signIn(email, password);
 
-    setState(() {
-        if(isLogged){
-        _loading = false;
-        Navigator.of(context).pushReplacementNamed('home');
-      }
-      else{
-        _loading = false;
-        _showSnackBar();
-      }
-    });
-    
+    if(isLogged){
+      _loading = false;
+      _userPreferences.session = true;
+      Navigator.of(context).pushReplacementNamed('home');
+    }
+    else{
+      _loading = false;
+      _showSnackBar();
+    }
 
-    
-
+    setState(() {});    
   }
 
   _showSnackBar(){
