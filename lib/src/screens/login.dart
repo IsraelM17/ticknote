@@ -26,39 +26,39 @@ class _LoginState extends State<Login> with RectangleOrange{
 
   @override
   Widget build(BuildContext context) {
-
-    final size = MediaQuery.of(context).size;
+    
+    final loginBloc = Provider.login(context);
+    final size      = MediaQuery.of(context).size;
 
     final formLogin = Container(
       height: size.height,
       width: size.width,
-      padding: EdgeInsets.symmetric(horizontal: size.width * 0.1),
+      padding: EdgeInsets.symmetric(vertical: size.height * 0.1),
       child: SingleChildScrollView(
         child: Column(
           children: <Widget>[
-            SizedBox( height: size.height * 0.1),
             Text(
               'TickNote',
               style: TextStyle(color: Colors.white, fontSize: 40),
             ),
 
             SizedBox( height: size.height * 0.05),
-            Container(
-              padding: EdgeInsets.symmetric(horizontal: size.width * 0.05, vertical: size.height * 0.03),
-              height: size.height * 0.48,
-              width: size.width ,
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(20),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.blueGrey[100].withOpacity(0.5),
-                    offset: Offset(7,10),
-                    blurRadius: 3.0
-                  )
-                ]
+
+            Card(
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+              elevation: 7.0,
+              margin: EdgeInsets.symmetric(horizontal: size.width * 0.1),
+              child: StreamBuilder<int>(
+                stream: loginBloc.choiceStream,
+                builder: (BuildContext context, AsyncSnapshot<int> snapshot) {
+                  !snapshot.hasData ? loginBloc.changeOption(1) : null;
+                  return Container(
+                    height: snapshot.data == 1 ? size.height * 0.45 : size.height * 0.5,
+                    padding: EdgeInsets.symmetric(vertical: size.height * 0.05, horizontal: size.width * 0.04),
+                    child: !_register ? _loginForm(context, size, loginBloc) : _registerForm(context, size, loginBloc)
+                  );
+                }
               ),
-              child: !_register ? _loginForm(context, size) : _registerForm(context, size)
             ),
 
             SizedBox( height: size.height * 0.05),
@@ -122,38 +122,23 @@ class _LoginState extends State<Login> with RectangleOrange{
     );
   }
 
-  Widget _loginForm(BuildContext context, Size size){
-
-    final loginBloc = Provider.login(context);
+  Widget _loginForm(BuildContext context, Size size, LoginBloc loginBloc){
 
     return Column(
       children: <Widget>[
         _textUser(context, size, loginBloc),
         SizedBox(height: size.height * 0.02,),
         _textPassword(context, size, loginBloc),
-        SizedBox(height: size.height * 0.01,),
-        CheckboxListTile(
-          value: _remember,
-          activeColor: Colors.green,
-          title: Text('Recordarme', style: TextStyle(fontSize: 15, color: Colors.black87)),
-          onChanged: (check){
-            setState(() {
-              _remember = check;
-            });
-          },
-        ),
         SizedBox(height: size.height * 0.02,),
         _buttonLogin(context, size, loginBloc),
         SizedBox(height: size.height * 0.02),
-        _registerOrLogin(context, size)
+        _registerOrLogin(context, size, loginBloc)
       ],
     );
 
   }
 
-  Widget _registerForm(BuildContext context, Size size){
-
-    final loginBloc = Provider.login(context);
+  Widget _registerForm(BuildContext context, Size size, LoginBloc loginBloc){
 
     return Column(
       children: <Widget>[
@@ -165,7 +150,7 @@ class _LoginState extends State<Login> with RectangleOrange{
         SizedBox(height: size.height * 0.01,),
         _buttonRegister(context, size, loginBloc),
         SizedBox(height: size.height * 0.01),
-        _registerOrLogin(context, size)
+        _registerOrLogin(context, size, loginBloc)
       ],
     );
   }
@@ -202,7 +187,7 @@ class _LoginState extends State<Login> with RectangleOrange{
     return StreamBuilder(
       stream: loginBloc.passwordStream,
       builder: (BuildContext context, AsyncSnapshot snapshot){
-        print(snapshot.data);
+        //print(snapshot.data);
         return Container(
           child: TextField(
             controller: _passController,
@@ -230,7 +215,6 @@ class _LoginState extends State<Login> with RectangleOrange{
     return StreamBuilder(
       stream: loginBloc.repeatPStream,
       builder: (BuildContext context, AsyncSnapshot snapshot){
-        print(snapshot.data);
         return Container(
           child: TextField(
             keyboardType: TextInputType.emailAddress,
@@ -266,8 +250,9 @@ class _LoginState extends State<Login> with RectangleOrange{
             borderRadius: BorderRadius.circular(10)
           ),
           child: Container(
-            padding: EdgeInsets.symmetric(horizontal: size.width * 0.25, vertical: size.height * 0.015),
-            child: Text('Ingresar'),
+            width: size.width,
+            height: size.height * 0.05,
+            child: Center(child: Text('Ingresar'),)
           ),
           onPressed: snapshot.hasData ? () => _login(_emailController.text, _passController.text) : null,
         );
@@ -289,8 +274,9 @@ class _LoginState extends State<Login> with RectangleOrange{
             borderRadius: BorderRadius.circular(10)
           ),
           child: Container(
-            padding: EdgeInsets.symmetric(horizontal: size.width * 0.2, vertical: size.height * 0.015),
-            child: Text('Registrarme'),
+            width: size.width,
+            height: size.height * 0.05,
+            child: Center(child: Text('Registrarme'),)
           ),
           onPressed: snapshot.hasData ? () => Navigator.of(context).pushReplacementNamed('home') : null,
         );
@@ -299,7 +285,7 @@ class _LoginState extends State<Login> with RectangleOrange{
     );
   }
 
-  Widget _registerOrLogin(BuildContext context, Size size){
+  Widget _registerOrLogin(BuildContext context, Size size, LoginBloc loginBloc){
 
     return Row(
       children: <Widget>[
@@ -309,6 +295,7 @@ class _LoginState extends State<Login> with RectangleOrange{
             child: Text('Iniciar sesion'),
             onPressed: _register ? (){ setState(() {
               _resetData(context, false);
+              loginBloc.changeOption(1);
             });} : null,
           ),
         ),
@@ -317,6 +304,7 @@ class _LoginState extends State<Login> with RectangleOrange{
             textColor: Color.fromRGBO(255, 151, 67, 1),
             child: Text('Registrarme'),
             onPressed: !_register ? () {setState(() {
+              loginBloc.changeOption(2);
               _resetData(context, true);
             });} : null,
           )
@@ -326,6 +314,8 @@ class _LoginState extends State<Login> with RectangleOrange{
 
   }
 
+
+  //! Revisar este coigo si funciona 
   _resetData(BuildContext context, bool register){
 
     final loginBloc = Provider.login(context);
