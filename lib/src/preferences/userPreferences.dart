@@ -22,11 +22,20 @@ class UserPreferences{
   }
 
   get session{
-    return _preferences.getBool('session') ?? 'login';
+    return _preferences.getBool('session') ?? false;
   }
 
   set session(bool session){
     _preferences.setBool('session', session);
   }
+
+  get profile{
+    return _preferences.getString('profile');
+  }
+
+  set profile(String profile){
+    _preferences.setString('profile', profile);
+  }
+
 
 }

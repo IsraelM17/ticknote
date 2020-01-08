@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flare_flutter/flare_actor.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -5,7 +7,7 @@ import 'package:ticknote/src/bloc/loginBloc.dart';
 import 'package:ticknote/src/bloc/provider.dart';
 import 'package:ticknote/src/firebase/auth.dart';
 import 'package:ticknote/src/preferences/userPreferences.dart';
-import 'package:ticknote/src/screens/rectangleOrange.dart';
+import 'package:ticknote/src/widgets/rectangleOrange.dart';
 
 class Login extends StatefulWidget with RectangleOrange{
   const Login({Key key}) : super(key: key);
@@ -17,7 +19,8 @@ class Login extends StatefulWidget with RectangleOrange{
 class _LoginState extends State<Login> with RectangleOrange{
 
   bool _register  = false;
-  bool _loading = false;
+  bool _loading   = false;
+  bool _viewPass  = true;
 
   TextEditingController _emailController  = TextEditingController();
   TextEditingController _passController   = TextEditingController(); 
@@ -25,6 +28,7 @@ class _LoginState extends State<Login> with RectangleOrange{
   GlobalKey<ScaffoldState> _globalKey = GlobalKey<ScaffoldState>();
 
   final _userPreferences = UserPreferences();
+  final _auth            = Auth();
 
   @override
   Widget build(BuildContext context) {
@@ -56,7 +60,7 @@ class _LoginState extends State<Login> with RectangleOrange{
                   !snapshot.hasData ? loginBloc.changeOption(1) : null;
                   return Container(
                     height: snapshot.data == 1 ? size.height * 0.45 : size.height * 0.5,
-                    padding: EdgeInsets.symmetric(vertical: size.height * 0.05, horizontal: size.width * 0.04),
+                    padding: EdgeInsets.symmetric(vertical: size.height * 0.03, horizontal: size.width * 0.04),
                     child: !_register ? _loginForm(context, size, loginBloc) : _registerForm(context, size, loginBloc)
                   );
                 }
@@ -65,24 +69,50 @@ class _LoginState extends State<Login> with RectangleOrange{
 
             SizedBox( height: size.height * 0.05),
 
-            Text('Ingresa mediante'),
+            Text('Ingresa mediante', style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold)),
+            Divider(color: Colors.orange,),
             SizedBox(height: size.height * 0.01,),
             Container(
               height: size.height * 0.1,
-              width: size.width * 0.5,
+              //width: size.width * 0.5,
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
-                  IconButton(
-                    icon: Icon(FontAwesomeIcons.facebook, color: Color.fromRGBO(66, 103, 178, 1)),
-                    iconSize: size.height * 0.06,
-                    onPressed: () => Navigator.of(context).pushNamed('home'),
-                  ),
-                  IconButton(
-                    icon: Icon(FontAwesomeIcons.google, color: Color.fromRGBO(216, 77, 61, 1),),
-                    iconSize: size.height * 0.06,
+                  RaisedButton(
+                    elevation: 3.0,
+                    color: Color.fromRGBO(66, 103, 178, 1),
+                    child: Container(
+                      height: size.height * 0.06,
+                      width: size.width * 0.25,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          Icon(FontAwesomeIcons.facebook, color: Colors.white),
+                          SizedBox(width: size.width *0.02,),
+                          Text('Facebook', style: TextStyle(color: Colors.white))
+                        ],
+                      ),
+                    ),
                     onPressed: () => print('Facebook'),
-                  )
+                  ),
+                  SizedBox(width: size.width * 0.03 ),
+                  RaisedButton(
+                    elevation: 3.0,
+                    color: Color.fromRGBO(216, 77, 61, 1),
+                    child: Container(
+                      height: size.height * 0.06,
+                      width: size.width * 0.25,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          Icon(FontAwesomeIcons.google, color: Colors.white),
+                          SizedBox(width: size.width *0.02,),
+                          Text('Google', style: TextStyle(color: Colors.white))
+                        ],
+                      ),
+                    ),
+                    onPressed: () => print('Facebook'),
+                  ),
                 ],
               ),
             )
@@ -171,9 +201,6 @@ class _LoginState extends State<Login> with RectangleOrange{
               labelText: 'email',
               hintText: 'israel@mail.com',
               errorText: snapshot.error,
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(15)
-              )
             ),
             onChanged: (email) => loginBloc.changeUser(email),
           ),
@@ -194,13 +221,17 @@ class _LoginState extends State<Login> with RectangleOrange{
           child: TextField(
             controller: _passController,
             keyboardType: TextInputType.emailAddress,
-            obscureText: true,
+            obscureText: _viewPass,
             decoration: InputDecoration(
               labelText: 'Contraseña',
               hintText: '',
               errorText: snapshot.error,
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(15)
+              suffixIcon: IconButton(
+                icon: _viewPass ? Icon(Icons.visibility_off) : Icon(Icons.visibility),
+                onPressed: () {
+                  _viewPass ? _viewPass = false : _viewPass = true;
+                  setState(() {});
+                },
               )
             ),
             onChanged: (password) => loginBloc.changePassword(password),
@@ -225,10 +256,6 @@ class _LoginState extends State<Login> with RectangleOrange{
               labelText: 'Confirmar contrasenia',
               hintText: '',
               errorText: snapshot.data != loginBloc.password ? 'Las contrasenias no scoinciden' : null,
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(15),
-                borderSide: BorderSide(color: snapshot.data != loginBloc.password ? Colors.red : Colors.green)
-              )
             ),
             onChanged: (password) => loginBloc.changeRepeatP(password),
           ),
@@ -330,20 +357,23 @@ class _LoginState extends State<Login> with RectangleOrange{
   } 
 
   _login(String email, String password) async {
-
+    final loginBloc = Provider.login(context);
+    
     setState(() {
       _loading = true;
     });
 
-    bool isLogged = await Auth().signIn(email, password);
+    Map<String, dynamic> user = await _auth.signInEmail(email, loginBloc.password);
 
-    if(isLogged){
+    if(user['message'] == 'loginOk'){
       _loading = false;
       _userPreferences.session = true;
+      _userPreferences.profile = jsonEncode(user['user']);
       Navigator.of(context).pushReplacementNamed('home');
     }
     else{
       _loading = false;
+      setState(() {});
       _showSnackBar();
     }
 
